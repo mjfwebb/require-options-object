@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/mjfwebb/require-options-object/compare/v1.2.0...v1.3.0) (2025-06-07)
+
+
+### Features
+
+* add class constructor handling ([0f66218](https://github.com/mjfwebb/require-options-object/commit/0f66218b610cca554e6b4d3e97caabc46f1e0722))
+
 # [1.2.0](https://github.com/mjfwebb/require-options-object/compare/v1.1.0...v1.2.0) (2025-06-07)
 
 
