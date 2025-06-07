@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/mjfwebb/require-options-object/compare/v1.3.0...v1.4.0) (2025-06-07)
+
+
+### Features
+
+* enhance parameter handling by adding 'hadType' property to parameter info ([1699651](https://github.com/mjfwebb/require-options-object/commit/1699651c2576245d79ba82112b3dc16b6a6cd433))
+
 # [1.3.0](https://github.com/mjfwebb/require-options-object/compare/v1.2.0...v1.3.0) (2025-06-07)
 
 
