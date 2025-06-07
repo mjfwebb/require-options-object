@@ -26,7 +26,7 @@ function isStdCallback(
   );
 }
 
-const rule = createRule({
+export const rule = createRule({
   name: "require-options-object",
   defaultOptions: [],
   meta: {
@@ -160,5 +160,3 @@ const rule = createRule({
     };
   },
 });
-
-export default rule;
