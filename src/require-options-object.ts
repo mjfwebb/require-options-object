@@ -44,6 +44,87 @@ export const rule = createRule({
   create(context: TSESLint.RuleContext<MessageIds, Options>) {
     const sourceCode = context.sourceCode;
 
+    function getParamInfo(p: TSESTree.Parameter): {
+      name: string;
+      defaultNode: TSESTree.Node | null;
+      defaultText: string | null;
+      typeAnno: string | null;
+      optional: boolean;
+    } {
+      // Unwrap TSParameterProperty
+      if (p.type === "TSParameterProperty") {
+        const param = p.parameter;
+        if (param.type === "Identifier") {
+          const name = param.name;
+          const typeAnno = param.typeAnnotation
+            ? sourceCode.getText(param.typeAnnotation.typeAnnotation)
+            : null;
+          return {
+            name,
+            defaultNode: null,
+            defaultText: null,
+            typeAnno,
+            optional: !!param.optional,
+          };
+        }
+      }
+      // Regular Identifier
+      if (p.type === "Identifier") {
+        const name = p.name;
+        const typeAnno = p.typeAnnotation
+          ? sourceCode.getText(p.typeAnnotation.typeAnnotation)
+          : null;
+        return {
+          name,
+          defaultNode: null,
+          defaultText: null,
+          typeAnno,
+          optional: !!p.optional,
+        };
+      }
+      // AssignmentPattern
+      if (p.type === "AssignmentPattern" && p.left.type === "Identifier") {
+        const name = p.left.name;
+        const defaultNode = p.right;
+        const defaultText = sourceCode.getText(p.right);
+        const typeAnno = p.left.typeAnnotation
+          ? sourceCode.getText(p.left.typeAnnotation.typeAnnotation)
+          : null;
+        return { name, defaultNode, defaultText, typeAnno, optional: true };
+      }
+      // Fallback
+      const text = sourceCode.getText(p);
+      return {
+        name: text,
+        defaultNode: null,
+        defaultText: null,
+        typeAnno: null,
+        optional: false,
+      };
+    }
+
+    function inferType(info: {
+      defaultNode: TSESTree.Node | null;
+      typeAnno: string | null;
+    }): string {
+      if (info.typeAnno) {
+        return info.typeAnno;
+      }
+      const node = info.defaultNode;
+      if (node && node.type === "Literal") {
+        const rawVal = (node as TSESTree.Literal).value;
+        switch (typeof rawVal) {
+          case "string":
+            return "string";
+          case "number":
+            return "number";
+          case "boolean":
+            return "boolean";
+        }
+      }
+      return "any";
+    }
+
     function checkParameters(
       node:
         | TSESTree.FunctionDeclaration
@@ -59,11 +140,9 @@ export const rule = createRule({
       }
 
       const parameters = node.params;
-
       if (isStdCallback(node, ["replaceAll"])) {
         return;
       }
-
       if (parameters.length <= 3) {
         return;
       }
@@ -73,81 +152,26 @@ export const rule = createRule({
         messageId: "requireOptions",
         data: { count: parameters.length },
         fix(fixer) {
-          // Generate destructured props with defaults
-          const properties = parameters.map((p) => {
-            if (p.type === "Identifier") {
-              return p.name;
-            }
-            if (
-              p.type === "AssignmentPattern" &&
-              p.left.type === "Identifier"
-            ) {
-              const name = p.left.name;
-              const defaultText = sourceCode.getText(p.right);
-              return `${name} = ${defaultText}`;
-            }
-            return sourceCode.getText(p);
-          });
-          const propertiesList = properties.join(", ");
-
-          // Generate type declarations, preserving TS annotations and inferring literal types,
-          // marking defaulted parameters as optional
-          const types = parameters
-            .map((p) => {
-              let nameNode: TSESTree.Identifier;
-
-              if (p.type === "Identifier") {
-                nameNode = p;
-              } else if (
-                p.type === "AssignmentPattern" &&
-                p.left.type === "Identifier"
-              ) {
-                nameNode = p.left;
-              } else {
-                const text = sourceCode.getText(p);
-                return `${text}: any`;
-              }
-
-              const typeAnno = nameNode.typeAnnotation?.typeAnnotation;
-              let typeText: string;
-              if (typeAnno) {
-                typeText = sourceCode.getText(typeAnno);
-              } else if (
-                p.type === "AssignmentPattern" &&
-                p.right.type === "Literal" &&
-                typeof p.right.value === "string"
-              ) {
-                typeText = "string";
-              } else if (
-                p.type === "AssignmentPattern" &&
-                p.right.type === "Literal" &&
-                typeof p.right.value === "number"
-              ) {
-                typeText = "number";
-              } else if (
-                p.type === "AssignmentPattern" &&
-                p.right.type === "Literal" &&
-                typeof p.right.value === "boolean"
-              ) {
-                typeText = "boolean";
-              } else {
-                typeText = "any";
-              }
-
-              const optionalFlag =
-                nameNode.optional || p.type === "AssignmentPattern" ? "?" : "";
-              const name = nameNode.name;
-              return `${name}${optionalFlag}: ${typeText}`;
+          const infos = parameters.map(getParamInfo);
+          const propsList = infos
+            .map((i) =>
+              i.defaultText ? `${i.name} = ${i.defaultText}` : i.name
+            )
+            .join(", ");
+          const typesList = infos
+            .map((i) => {
+              const opt = i.optional ? "?" : "";
+              const typeTxt = inferType(i);
+              return `${i.name}${opt}: ${typeTxt}`;
             })
             .join("; ");
 
-          const updatedParameter = `{ ${propertiesList} }: { ${types} }`;
-
+          const replacement = `{ ${propsList} }: { ${typesList} }`;
           const first = parameters[0];
           const last = parameters[parameters.length - 1];
           return fixer.replaceTextRange(
             [first.range[0], last.range[1]],
-            updatedParameter
+            replacement
           );
         },
       });
