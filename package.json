@@ -1,0 +1,38 @@
+{
+  "name": "@mjfwebb/require-options-object",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjfwebb/require-options-object.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mjfwebb/require-options-object/issues"
+  },
+  "homepage": "https://github.com/mjfwebb/require-options-object#readme",
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/node": "^22.13.0",
+    "@typescript-eslint/parser": "^8.33.1",
+    "@typescript-eslint/rule-tester": "^8.33.1",
+    "semantic-release": "^24.2.1",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.4"
+  },
+  "dependencies": {
+    "@typescript-eslint/experimental-utils": "^5.62.0",
+    "@typescript-eslint/utils": "^8.33.1"
+  },
+  "packageManager": "pnpm@10.11.1+sha512.e519b9f7639869dc8d5c3c5dfef73b3f091094b0a006d7317353c72b124e80e1afd429732e28705ad6bfa1ee879c1fce46c128ccebd3192101f43dd67c667912"
+}
