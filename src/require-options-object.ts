@@ -50,6 +50,7 @@ export const rule = createRule({
       defaultText: string | null;
       typeAnno: string | null;
       optional: boolean;
+      hadType: boolean;
     } {
       // Unwrap TSParameterProperty
       if (p.type === "TSParameterProperty") {
@@ -65,6 +66,7 @@ export const rule = createRule({
             defaultText: null,
             typeAnno,
             optional: !!param.optional,
+            hadType: !!param.typeAnnotation,
           };
         }
       }
@@ -80,6 +82,7 @@ export const rule = createRule({
           defaultText: null,
           typeAnno,
           optional: !!p.optional,
+          hadType: !!p.typeAnnotation,
         };
       }
       // AssignmentPattern
@@ -90,7 +93,14 @@ export const rule = createRule({
         const typeAnno = p.left.typeAnnotation
           ? sourceCode.getText(p.left.typeAnnotation.typeAnnotation)
           : null;
-        return { name, defaultNode, defaultText, typeAnno, optional: true };
+        return {
+          name,
+          defaultNode,
+          defaultText,
+          typeAnno,
+          optional: true,
+          hadType: !!p.left.typeAnnotation,
+        };
       }
       // Fallback
       const text = sourceCode.getText(p);
@@ -100,6 +110,7 @@ export const rule = createRule({
         defaultText: null,
         typeAnno: null,
         optional: false,
+        hadType: false,
       };
     }
 
@@ -158,15 +169,23 @@ export const rule = createRule({
               i.defaultText ? `${i.name} = ${i.defaultText}` : i.name
             )
             .join(", ");
-          const typesList = infos
-            .map((i) => {
-              const opt = i.optional ? "?" : "";
-              const typeTxt = inferType(i);
-              return `${i.name}${opt}: ${typeTxt}`;
-            })
-            .join("; ");
 
-          const replacement = `{ ${propsList} }: { ${typesList} }`;
+          // Only add a type annotation if at least one original param had a type
+          const hadAnyType = infos.some((i) => i.hadType);
+          let typesList = "";
+          if (hadAnyType) {
+            typesList = infos
+              .map((i) => {
+                const opt = i.optional ? "?" : "";
+                const typeTxt = inferType(i);
+                return `${i.name}${opt}: ${typeTxt}`;
+              })
+              .join("; ");
+          }
+
+          const replacement = hadAnyType
+            ? `{ ${propsList} }: { ${typesList} }`
+            : `{ ${propsList} }`;
           const first = parameters[0];
           const last = parameters[parameters.length - 1];
           return fixer.replaceTextRange(
