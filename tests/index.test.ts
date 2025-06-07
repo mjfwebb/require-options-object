@@ -1,5 +1,5 @@
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import rule from "../src/index";
+import { rule } from "../src/require-options-object.js";
 
 const ruleTester = new RuleTester();
 
