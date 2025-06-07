@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/mjfwebb/require-options-object/compare/v1.1.0...v1.2.0) (2025-06-07)
+
+
+### Features
+
+* add plugin wrapper ([3a3ce74](https://github.com/mjfwebb/require-options-object/commit/3a3ce74982691888596d8d692bce1dce82eba7f3))
+* use esm and named export ([895eab4](https://github.com/mjfwebb/require-options-object/commit/895eab4a4c3ad7049dbd26b4a4198496d8b3b6b7))
+
 # [1.1.0](https://github.com/mjfwebb/require-options-object/compare/v1.0.0...v1.1.0) (2025-06-07)
 
 
