@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mjfwebb/require-options-object/compare/v1.0.0...v1.1.0) (2025-06-07)
+
+
+### Features
+
+* remove @typescript-eslint/experimental-utils ([c73f786](https://github.com/mjfwebb/require-options-object/commit/c73f7869458f880868684de477fa587d491d4399))
+
 # 1.0.0 (2025-06-07)
 
 
