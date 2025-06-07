@@ -1,6 +1,6 @@
 # @mjfwebb/require-options-object
 
-An eslint plugin that enforces using an options object for functions with more than three parameters.
+An eslint/teslint plugin that enforces using an options object for functions with more than three parameters.
 
 ## Installation
 
@@ -46,6 +46,14 @@ const obj = {
     return;
   },
 };
+
+class C {
+  constructor(a, b, c, d) {}
+}
+
+class C2 {
+  constructor(a: string, b: number, c: boolean, d: unknown) {}
+}
 ```
 
 #### ✅ Correct
@@ -62,6 +70,24 @@ const obj = {
     return;
   },
 };
+
+class C {
+  constructor({ a, b, c, d }) {}
+}
+
+class C2 {
+  constructor({
+    a,
+    b,
+    c,
+    d,
+  }: {
+    a: string,
+    b: number,
+    c: boolean,
+    d: unknown,
+  }) {}
+}
 ```
 
 ### Notes
@@ -69,6 +95,9 @@ const obj = {
 - Functions with three or fewer parameters are not affected.
 - Standard callbacks (e.g., `replaceAll(x => x.toUpperCase())`) are ignored.
 - The rule auto-fixes by converting parameters to a destructured options object.
+- If none of the original parameters had a type annotation, the generated destructured parameter will not have a type annotation either.
+- Functions with rest parameters (e.g., `...rest`) are not affected.
+- Functions with destructured parameters as the first parameter are not auto-fixed.
 
 ## License
 
