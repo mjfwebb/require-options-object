@@ -14,39 +14,66 @@ ruleTester.run("require-options-object", rule, {
 
     // 3‐param constructor is OK
     `
-    class C {
-      constructor(
-        private gameState: string,
-        private areas: string,
-        private rng: string,
-      ) {}
+    class MyClass {
+      constructor(a, b, c) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+      }
     }
     `,
+
+    // Additional test: function with rest parameter (should be valid)
+    `function many(a, b, ...rest) { return rest.length; }`,
   ],
   invalid: [
     {
       code: `function test(a, b, c, d) { return a + b + c + d; }`,
       errors: [{ messageId: "requireOptions", data: { count: 4 } }],
-      output: `function test({ a, b, c, d }: { a: any; b: any; c: any; d: any }) { return a + b + c + d; }`,
+      output: `function test({ a, b, c, d }) { return a + b + c + d; }`,
     },
     {
       code: `const fn = (x, y = 2, z, w = 'w') => x * y * z * parseInt(w);`,
       errors: [{ messageId: "requireOptions", data: { count: 4 } }],
-      output: `const fn = ({ x, y = 2, z, w = 'w' }: { x: any; y?: number; z: any; w?: string }) => x * y * z * parseInt(w);`,
+      output: `const fn = ({ x, y = 2, z, w = 'w' }) => x * y * z * parseInt(w);`,
     },
     {
       code: `const obj = { method(a, b, c, d) { return; } };`,
       errors: [{ messageId: "requireOptions", data: { count: 4 } }],
-      output: `const obj = { method({ a, b, c, d }: { a: any; b: any; c: any; d: any }) { return; } };`,
+      output: `const obj = { method({ a, b, c, d }) { return; } };`,
     },
     {
       code: `
       class C {
         constructor(
-          private gameState: string,
-          private gameStateEmitter: string,
-          private areas: string,
-          private rng: string,
+          private thing: Thing,
+          private those: Those,
+          private quantity: number,
+          test: string,
+        ) {
+          // some logic  
+        }
+      }
+      `,
+      errors: [{ messageId: "requireOptions", data: { count: 4 } }],
+      output: `
+      class C {
+        constructor(
+          { thing, those, quantity, test }: { thing: Thing; those: Those; quantity: number; test: string },
+        ) {
+          // some logic  
+        }
+      }
+      `,
+    },
+    {
+      code: `
+      class C {
+        constructor(
+          a: string,
+          b: number,
+          c: boolean,
+          d: unknown,
         ) {}
       }
       `,
@@ -54,7 +81,24 @@ ruleTester.run("require-options-object", rule, {
       output: `
       class C {
         constructor(
-          { gameState, gameStateEmitter, areas, rng }: { gameState: string; gameStateEmitter: string; areas: string; rng: string },
+          { a, b, c, d }: { a: string; b: number; c: boolean; d: unknown },
+        ) {}
+      }
+      `,
+    },
+    {
+      code: `
+      class C {
+        constructor(
+          a, b, c, d,
+        ) {}
+      }
+      `,
+      errors: [{ messageId: "requireOptions", data: { count: 4 } }],
+      output: `
+      class C {
+        constructor(
+          { a, b, c, d },
         ) {}
       }
       `,
