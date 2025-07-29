@@ -26,6 +26,37 @@ function isStdCallback(
   );
 }
 
+function isPropertyCallback(
+  node:
+    | TSESTree.FunctionDeclaration
+    | TSESTree.FunctionExpression
+    | TSESTree.ArrowFunctionExpression
+): boolean {
+  const parent = node.parent;
+  if (!parent) {
+    return false;
+  }
+
+  // Check if this function is a property value in an object (but not a method)
+  // e.g., { listener: (a, b, c, d) => {} } or { listener: function(a, b, c, d) {} }
+  // but NOT { method(a, b, c, d) {} } which is a method shorthand
+  if (parent.type === "Property" && parent.value === node && !parent.method) {
+    return true;
+  }
+
+  // Check if this function is assigned to a property
+  // e.g., obj.listener = (a, b, c, d) => {}
+  if (
+    parent.type === "AssignmentExpression" &&
+    parent.right === node &&
+    parent.left.type === "MemberExpression"
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export const rule = createRule({
   name: "require-options-object",
   defaultOptions: [],
@@ -152,6 +183,9 @@ export const rule = createRule({
 
       const parameters = node.params;
       if (isStdCallback(node, ["replaceAll"])) {
+        return;
+      }
+      if (isPropertyCallback(node)) {
         return;
       }
       if (parameters.length <= 3) {

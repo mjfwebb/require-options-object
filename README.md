@@ -88,12 +88,22 @@ class C2 {
     d: unknown,
   }) {}
 }
+
+// Property callbacks are also allowed (signatures may be controlled by external APIs)
+const config = {
+  listener: async (locationName, itemName, quantity, quality) => {
+    console.log(locationName, itemName, quantity, quality);
+  },
+};
+
+obj.callback = (x, y, z, w, v) => x + y + z + w + v;
 ```
 
 ### Notes
 
 - Functions with three or fewer parameters are not affected.
 - Standard callbacks (e.g., `replaceAll(x => x.toUpperCase())`) are ignored.
+- Property callbacks are ignored (e.g., `{ listener: (a, b, c, d) => {} }` or `obj.callback = (a, b, c, d) => {}`), as these function signatures may be controlled by external APIs.
 - The rule auto-fixes by converting parameters to a destructured options object.
 - If none of the original parameters had a type annotation, the generated destructured parameter will not have a type annotation either.
 - Functions with rest parameters (e.g., `...rest`) are not affected.

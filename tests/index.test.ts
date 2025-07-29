@@ -25,6 +25,17 @@ ruleTester.run("require-options-object", rule, {
 
     // Additional test: function with rest parameter (should be valid)
     `function many(a, b, ...rest) { return rest.length; }`,
+
+    // Property callbacks should be ignored (we may not control the signature)
+    `const config = {
+      listener: async (locationName, itemName, quantity, quality) => {
+        console.log(locationName, itemName, quantity, quality);
+      }
+    };`,
+    `const obj = {
+      handler: function(a, b, c, d, e) { return a + b + c + d + e; }
+    };`,
+    `obj.callback = (x, y, z, w, v) => x + y + z + w + v;`,
   ],
   invalid: [
     {
