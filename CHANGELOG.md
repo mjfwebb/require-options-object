@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/mjfwebb/require-options-object/compare/v1.4.0...v1.5.0) (2025-07-29)
+
+
+### Features
+
+* add handling for property callbacks ([63b0ec7](https://github.com/mjfwebb/require-options-object/commit/63b0ec7c6c029358d887a883c62819b92679639f))
+
 # [1.4.0](https://github.com/mjfwebb/require-options-object/compare/v1.3.0...v1.4.0) (2025-06-07)
 
 
