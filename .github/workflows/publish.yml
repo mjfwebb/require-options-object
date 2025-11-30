@@ -6,6 +6,8 @@ on:
       - main
 
 permissions:
+  contents: write # to create a release
+  issues: write # to create issues for failed releases
   id-token: write # to enable use of OIDC for npm provenance
 
 jobs:
