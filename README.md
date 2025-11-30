@@ -97,6 +97,11 @@ const config = {
 };
 
 obj.callback = (x, y, z, w, v) => x + y + z + w + v;
+
+// Callbacks passed as function arguments are also allowed
+eventEmitter.on("data", async (id, payload, timestamp, metadata) => {
+  await processData({ id, payload, timestamp, metadata });
+});
 ```
 
 ### Notes
@@ -104,6 +109,7 @@ obj.callback = (x, y, z, w, v) => x + y + z + w + v;
 - Functions with three or fewer parameters are not affected.
 - Standard callbacks (e.g., `replaceAll(x => x.toUpperCase())`) are ignored.
 - Property callbacks are ignored (e.g., `{ listener: (a, b, c, d) => {} }` or `obj.callback = (a, b, c, d) => {}`), as these function signatures may be controlled by external APIs.
+- Callbacks passed as function arguments are ignored (e.g., `eventEmitter.on('event', (a, b, c, d) => {})`), as these function signatures are typically controlled by external APIs.
 - The rule auto-fixes by converting parameters to a destructured options object.
 - If none of the original parameters had a type annotation, the generated destructured parameter will not have a type annotation either.
 - Functions with rest parameters (e.g., `...rest`) are not affected.

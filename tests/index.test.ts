@@ -36,6 +36,15 @@ ruleTester.run("require-options-object", rule, {
       handler: function(a, b, c, d, e) { return a + b + c + d + e; }
     };`,
     `obj.callback = (x, y, z, w, v) => x + y + z + w + v;`,
+
+    // Callbacks passed as arguments should be ignored (signatures controlled by external APIs)
+    `eventEmitter.on('data', async (id, payload, timestamp, metadata) => {
+      await processData({ id, payload, timestamp, metadata });
+    });`,
+    `addEventListener('click', function(event, target, timestamp, metadata) {
+      console.log(event, target, timestamp, metadata);
+    });`,
+    `setTimeout((a, b, c, d) => { return a + b + c + d; }, 1000);`,
   ],
   invalid: [
     {

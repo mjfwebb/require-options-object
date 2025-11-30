@@ -54,6 +54,16 @@ function isPropertyCallback(
     return true;
   }
 
+  // Check if this function is being passed as an argument to a function call
+  // e.g., eventEmitter.on('event', (a, b, c, d) => {}) or addEventListener('click', function(a, b, c, d) {})
+  // These callbacks' signatures are typically controlled by external APIs
+  if (
+    parent.type === "CallExpression" &&
+    parent.arguments.some((arg) => arg === node)
+  ) {
+    return true;
+  }
+
   return false;
 }
 
