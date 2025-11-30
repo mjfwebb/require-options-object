@@ -1,3 +1,16 @@
+# [1.6.0](https://github.com/mjfwebb/require-options-object/compare/v1.5.0...v1.6.0) (2025-11-30)
+
+
+### Bug Fixes
+
+* add missing permissions for creating releases and issues ([62ca0e0](https://github.com/mjfwebb/require-options-object/commit/62ca0e0a58f94f79af70da75bca52e30f0d4baa7))
+* ignore callbacks passed as function arguments to prevent false positives ([86c6e2c](https://github.com/mjfwebb/require-options-object/commit/86c6e2c6dfee91f10aec88698a614a692466dcb8))
+
+
+### Features
+
+* enhance publish workflow with npm update and integrity verification ([84cb1ab](https://github.com/mjfwebb/require-options-object/commit/84cb1ab3520fa061f81e9fe6abb5e7a08277e2bb))
+
 # [1.5.0](https://github.com/mjfwebb/require-options-object/compare/v1.4.0...v1.5.0) (2025-07-29)
 
 
